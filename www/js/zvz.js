@@ -1,10 +1,10 @@
 /* jshint undef: true, strict:false, trailing:false, unused:false */
-/* global require, exports, console, process, module, L, angular, _, jQuery, 3d3 */
+/* global require, exports, console, process, module, L, angular, _, jQuery, d3 */
 
 // this utility helps us change the class of the main ng-view
 // to support fancy transitions between views
-angular.module('zooniviz', [])
-	.controller('main', function($scope, $rootScope, utils) {
+angular.module('zooniviz', ['nlp'])
+	.controller('main', function($scope, $rootScope, utils, nlparsers) {
 		var datadir = 'data/', 
 			sa = function(f) { return utils.safeApply($scope, f); },
 			files = [ 'andromeda_discussions.csv', 
@@ -60,7 +60,7 @@ angular.module('zooniviz', [])
 			template:"<div class='hist'><ul class='exs'><li ng-repeat='e in examples'> {{ e.body }} </li></ul></div>",
 			replace:true,
 			link:function($scope, $element) { $scope.el = $element[0]; },
-			controller:function($scope, utils) {
+			controller:function($scope, nlparsers, utils) {
 				var sa = function(f) { return utils.safeApply($scope, f); };
 
 				$scope.$watch('data + value', function() { 
@@ -78,14 +78,14 @@ angular.module('zooniviz', [])
 					pairs = pairs.map(function(x) { return [parseInt(x[0]), x[1]]; });
 
 					console.log('pairs >> ', pairs);
-					console.log('count >> ', counts); window.c = counts;
+					console.log('countn >> ', counts); window.c = counts;
 
 					var svg = d3.select($scope.el).append('svg'),
 						width = $($scope.el).find('svg').width(),
 						height = $($scope.el).find('svg').height(),
 						xmarg = 20, ymarg=20,
 						xscale = d3.scale.linear().range([xmarg, width-xmarg]),
-						yscale = d3.scale.linear().range([height-ymarg, ymarg]);
+						yscale = d3.scale.linear().range([height-ymarg, ymarg]),
 						barw = (width-2*xmarg)/pairs.length,
 						maxx = Math.max.apply(this, pairs.map(function(x) { return x[0]; }));
 						maxy = Math.max.apply(this, pairs.map(function(x) { return x[1]; }));
@@ -120,6 +120,8 @@ angular.module('zooniviz', [])
 					});
 
 				});
+				window.nlp = nlparsers;
+
 			}
 		};
 
