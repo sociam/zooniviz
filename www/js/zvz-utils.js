@@ -3,7 +3,7 @@
 
 (function() {
 	angular
-		.module('hq').factory('utils',function() {
+		.module('zooniviz').factory('utils',function() {
 			var DEBUG=0, INFO=1, LOG=2, WARN=3, ERROR=4, DEBUG_LEVEL = DEBUG;
 			var jQ = jQuery;
 			return {
