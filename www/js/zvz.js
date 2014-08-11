@@ -32,8 +32,6 @@ angular.module('zooniviz', ['nlp'])
 			return val;
 		};
 
-		var setup = function() { d3.select('body').append('svg');	};
-
 		$scope.$watch('g.selected_file', function(f) {
 			if (!f || $scope.selected_datasets[f] !== undefined) { return; }
 			console.log('loading ', f);
@@ -44,8 +42,6 @@ angular.module('zooniviz', ['nlp'])
 				}
 			});
 		});
-
-		setup();
 		window.f = $scope.files;
 		window.$s = $scope;
 	}).directive('hist', function() { 
