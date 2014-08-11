@@ -25,39 +25,35 @@ angular.module('zooniviz', ['nlp'])
 
 		$scope.files = files;
 		$scope.g = {};
-		var render = function(d) { 
+		$scope.selected_datasets = {};
 
-		},
-		process = function(d) { 
-			console.log('process >> ', d);
-			sa(function() { 
-				$scope.worddata = d;
-				$scope.wordfn = function(x) { 
-					var val = x.body.split(' ').filter(function(x) { return x.trim().length > 0; }).length;
-					return val;
-				};
-			});
-		},
-		setup = function() { d3.select('body').append('svg');	};
+		$scope.wordfn = function(x) { 
+			var val = x.body.split(' ').filter(function(x) { return x.trim().length > 0; }).length;
+			return val;
+		};
+
+		var setup = function() { d3.select('body').append('svg');	};
+
 		$scope.$watch('g.selected_file', function(f) {
-			if (!f) { return; }
+			if (!f || $scope.selected_datasets[f] !== undefined) { return; }
 			console.log('loading ', f);
 			d3.tsv(datadir+f, function(err, data) {
-				if (!err) { 
+				if (!err) {
 					console.log('loaded ', err, data.length);
-					process(data);
-					render(data);
+					sa(function() { $scope.selected_datasets[f] = data; });
 				}
 			});
 		});
+
 		setup();
 		window.f = $scope.files;
+		window.$s = $scope;
 	}).directive('hist', function() { 
 
 		return { 
 			restrict:'E',
-			scope:{ 'data':'=', value:'=' },
-			template:"<div class='hist'><ul class='exs'><li ng-repeat='e in examples'> {{ e.body }} </li></ul></div>",
+			scope:{ 'data':'=', value:'=', title:'=', examples:'=' }, // examples gets set by _us_ and propagated back up^^
+			template:"<div class='hist'><div class='title' ng-bind='title'></div></div>",
 			replace:true,
 			link:function($scope, $element) { $scope.el = $element[0]; },
 			controller:function($scope, nlparsers, utils) {
@@ -74,11 +70,9 @@ angular.module('zooniviz', ['nlp'])
 					});
 					var pairs = _(counts).pairs();
 
-					pairs.sort(function(x, y) { return y[1] - x[1]; });
+					pairs.sort(function(x, y) { return x[0] - y[0]; });
 					pairs = pairs.map(function(x) { return [parseInt(x[0]), x[1]]; });
 
-					console.log('pairs >> ', pairs);
-					console.log('countn >> ', counts); window.c = counts;
 
 					var svg = d3.select($scope.el).append('svg'),
 						width = $($scope.el).find('svg').width(),
@@ -87,7 +81,7 @@ angular.module('zooniviz', ['nlp'])
 						xscale = d3.scale.linear().range([xmarg, width-xmarg]),
 						yscale = d3.scale.linear().range([height-ymarg, ymarg]),
 						barw = (width-2*xmarg)/pairs.length,
-						maxx = Math.max.apply(this, pairs.map(function(x) { return x[0]; }));
+						maxx = Math.max.apply(this, pairs.map(function(x) { return x[0]; })),
 						maxy = Math.max.apply(this, pairs.map(function(x) { return x[1]; }));
 
 					console.log(height);
