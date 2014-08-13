@@ -93,7 +93,7 @@ angular.module('zooniviz', ['nlp'])
 					bar.append('rect')
 						.attr('class', 'histbar')
 						.attr('y', function(d) { 
-							console.log('d1 ', d[1]);
+							// console.log('d1 ', d[1]);
 							return yscale(d[1]); 
 						}).attr('height', function(d) { return height - yscale(d[1]); })
 						.attr('width', barw-1);
@@ -103,7 +103,7 @@ angular.module('zooniviz', ['nlp'])
 						var v = x.target.__data__[0], count = x.target.__data__[1];
 						sa(function() { 
 							$scope.examples = $scope.data.filter(function(x) { return $scope.value(x) == v; });
-							console.log('ex ', $scope.examples);
+							// console.log('ex ', $scope.examples);
 						});
 						console.log('value:' + v + " n: " + count);
 						$('.hovertext').html('value:' + v + " n: " + count);
